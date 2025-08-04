@@ -7,38 +7,44 @@ import * as path from 'path';
 
 @Injectable()
 export class GithubAuthService {
-  private appId = process.env.GITHUB_APP_ID;
-  private installationId = process.env.GITHUB_INSTALLATION_ID;
-  private privateKeyPath = process.env.GITHUB_PRIVATE_KEY_PATH || './src/github/private-key.pem';
+    private appId = process.env.GITHUB_APP_ID;
+    private installationId = process.env.GITHUB_INSTALLATION_ID;
+    private privateKeyPath = process.env.GITHUB_PRIVATE_KEY_PATH || './src/github/private-key.pem';
 
-  private generateJwt(): string {
-    const privateKey = fs.readFileSync(path.resolve(this.privateKeyPath), 'utf8');
+    private generateJwt(): string {
+        const rawKey = process.env.GITHUB_PRIVATE_KEY;
 
-    const payload = {
-      iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + (10 * 60),
-      iss: this.appId,
-    };
+        if (!rawKey) {
+            throw new Error('❌ La variable de entorno GITHUB_PRIVATE_KEY no está definida');
+        }
 
-    return jwt.sign(payload, privateKey, { algorithm: 'RS256' });
-  }
+        const privateKey = rawKey.replace(/\\n/g, '\n');
 
-  async getInstallationAccessToken(): Promise<string> {
-    const token = this.generateJwt();
+        const payload = {
+            iat: Math.floor(Date.now() / 1000),
+            exp: Math.floor(Date.now() / 1000) + (10 * 60),
+            iss: this.appId,
+        };
 
-    const url = `https://api.github.com/app/installations/${this.installationId}/access_tokens`;
+        return jwt.sign(payload, privateKey, { algorithm: 'RS256' });
+    }
 
-    const response = await axios.post(
-      url,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/vnd.github+json',
-        },
-      },
-    );
+    async getInstallationAccessToken(): Promise<string> {
+        const token = this.generateJwt();
 
-    return response.data.token;
-  }
+        const url = `https://api.github.com/app/installations/${this.installationId}/access_tokens`;
+
+        const response = await axios.post(
+            url,
+            {},
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    Accept: 'application/vnd.github+json',
+                },
+            },
+        );
+
+        return response.data.token;
+    }
 }
