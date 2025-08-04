@@ -9,6 +9,7 @@ import { Version } from './version.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([Proyecto, Rama, Version])],
   providers: [VersionService],
-  controllers: [VersionController]
+  controllers: [VersionController],
+  exports: [VersionService],
 })
 export class VersionModule { }

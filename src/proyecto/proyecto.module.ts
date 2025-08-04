@@ -10,5 +10,6 @@ import { Version } from '../version/version.entity';
   imports: [TypeOrmModule.forFeature([Proyecto, Rama, Version])],
   controllers: [ProyectoController],
   providers: [ProyectoService],
+  exports: [ProyectoService],
 })
 export class ProyectoModule {}
