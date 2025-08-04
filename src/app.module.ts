@@ -9,6 +9,7 @@ import { RamaModule } from './rama/rama.module';
 import { VersionModule } from './version/version.module';
 import { Rama } from './rama/rama.entity';
 import { Version } from './version/version.entity';
+import { GithubModule } from './github/github.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { Version } from './version/version.entity';
     ProyectoModule,
     RamaModule,
     VersionModule,
+    GithubModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,
