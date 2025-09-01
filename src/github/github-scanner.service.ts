@@ -31,9 +31,7 @@ export class GithubScannerService {
         const packageJson = JSON.parse(content);
 
         // Aquí cambias: en lugar de poner "0.0.0", lo dejas como undefined
-        const version =
-            packageJson.dependencies?.['@angular/core'] ||
-            packageJson.devDependencies?.['@angular/core'];
+        const version = packageJson.dependencies?.axios || packageJson.devDependencies?.axios;
 
         // Si no encontró la librería, NO guardes nada
         if (!version) {
