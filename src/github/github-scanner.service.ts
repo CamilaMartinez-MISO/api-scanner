@@ -17,16 +17,27 @@ export class GithubScannerService {
     async escanearRepositorio(owner: string, repo: string, branch: string = 'main') {
         const token = await this.authService.getInstallationAccessToken();
 
-        const response = await axios.get(`https://api.github.com/repos/${owner}/${repo}/contents/package.json?ref=${branch}`, {
-            headers: {
-                Authorization: `token ${token}`,
-                Accept: 'application/vnd.github+json',
+        const response = await axios.get(
+            `https://api.github.com/repos/${owner}/${repo}/contents/package.json?ref=${branch}`,
+            {
+                headers: {
+                    Authorization: `token ${token}`,
+                    Accept: 'application/vnd.github+json',
+                },
             },
-        });
+        );
 
         const content = Buffer.from(response.data.content, 'base64').toString('utf-8');
         const packageJson = JSON.parse(content);
-        const version = packageJson.dependencies?.axios || packageJson.devDependencies?.axios || '0.0.0';
+
+        // Aquí cambias: en lugar de poner "0.0.0", lo dejas como undefined
+        const version = packageJson.dependencies?.axios || packageJson.devDependencies?.axios;
+
+        // Si no encontró la librería, NO guardes nada
+        if (!version) {
+            console.log(`ℹ️ El repo ${repo} no tiene la librería instalada, no se guarda.`);
+            return null;
+        }
 
         const proyecto = await this.proyectoService.create(repo);
         const rama = await this.ramaService.create(branch, proyecto.id);

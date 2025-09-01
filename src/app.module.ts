@@ -19,21 +19,21 @@ import { GithubModule } from './github/github.module';
     VersionModule,
     GithubModule,
     TypeOrmModule.forRoot({
-      type: 'postgres',
-      url: process.env.DATABASE_URL,
       // type: 'postgres',
-      // host: 'localhost',
-      // port: 5432,
-      // username: 'postgres',
-      // password: 'postgres',
-      // database: 'scanner',
+      // url: process.env.DATABASE_URL,
+      type: 'postgres',
+      host: 'localhost',
+      port: 5432,
+      username: 'postgres',
+      password: 'postgres',
+      database: 'scanner',
       entities: [Proyecto, Rama, Version],
-      ssl: true,
-      extra: {
-        ssl: {
-          rejectUnauthorized: false,
-        },
-      },
+      // ssl: true,
+      // extra: {
+      //   ssl: {
+      //     rejectUnauthorized: false,
+      //   },
+      // },
       synchronize: true, // ❗ SOLO PARA DESARROLLO
     }),
   ],
